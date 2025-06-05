@@ -191,3 +191,7 @@
 .animate-arrow-pulse {
   animation: arrow-pulse 2.5s infinite;
 }
+
+.loader {
+  border-top-color: transparent;
+}

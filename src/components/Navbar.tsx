@@ -78,7 +78,7 @@ const Navbar: React.FC = () => {
           className="md:hidden bg-white border-t"
         >
           <div className="container-custom py-4 flex flex-col space-y-4">
-            {['Home', 'Options', 'Data', 'Experience', 'About'].map((item) => (
+            {['首頁', '告別方式', '數據趨勢', '案例展示', '關於本研究'].map((item) => (
               <a
                 key={item}
                 href={`#${item.toLowerCase()}`}
@@ -88,7 +88,7 @@ const Navbar: React.FC = () => {
                 {item}
               </a>
             ))}
-            <button className="btn-primary mt-2">Share Your Story</button>
+            <button className="btn-primary mt-2">留下你的故事</button>
           </div>
         </motion.div>
       )}

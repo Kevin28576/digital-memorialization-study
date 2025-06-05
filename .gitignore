@@ -1,3 +1,4 @@
+src/firebase/firebase.ts
 # Logs
 logs
 *.log

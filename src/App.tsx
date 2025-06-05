@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import Navbar from './components/Navbar.tsx';
 import HeroSection from './components/HeroSection.tsx';
 import DigitalFarewellOptions from './components/DigitalFarewellOptions.tsx';
-import VotingSection from '../VotingSection.tsx';
+import VotingSection from './components/VotingSection.tsx';
 import DataVisualization from './components/DataVisualization.tsx';
 import ExperienceSection from './components/ExperienceSection.tsx';
 import InfoSection from './components/InfoSection.tsx';

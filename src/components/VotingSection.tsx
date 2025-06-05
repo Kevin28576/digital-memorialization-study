@@ -1,39 +1,67 @@
-import React, { useState } from 'react';
+// src/components/VotingSection.tsx
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
 import { ThumbsUp, ThumbsDown, Users } from 'lucide-react';
+import { db, ref, set, onValue } from '../firebase/firebase';
+
+interface VoteStats {
+  accept: number;
+  reject: number;
+  total: number;
+  userVote: null | 'accept' | 'reject';
+}
 
 const VotingSection: React.FC = () => {
-  const { ref, inView } = useInView({
+  const { ref: viewRef, inView } = useInView({
     threshold: 0.2,
-    triggerOnce: true
+    triggerOnce: true,
   });
 
-  const [voteStats, setVoteStats] = useState({
-    accept: 68,
-    reject: 32,
-    total: 100,
-    userVote: null as null | 'accept' | 'reject'
+  const [voteStats, setVoteStats] = useState<VoteStats>({
+    accept: 0,
+    reject: 0,
+    total: 0,
+    userVote: null,
   });
+
+  useEffect(() => {
+    const voteRef = ref(db, 'votes');
+    onValue(voteRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const savedVote = localStorage.getItem('userVote');
+        setVoteStats({
+          ...data,
+          userVote: savedVote === 'accept' || savedVote === 'reject' ? (savedVote as 'accept' | 'reject') : null
+        });
+      }
+    });
+  }, []);
 
   const handleVote = (vote: 'accept' | 'reject') => {
     if (voteStats.userVote !== null) return;
 
-    setVoteStats(prev => {
-      const newStats = { ...prev };
-      newStats[vote]++;
-      newStats.total++;
-      newStats.userVote = vote;
-      return newStats;
-    });
+    const newStats = {
+      accept: voteStats.accept + (vote === 'accept' ? 1 : 0),
+      reject: voteStats.reject + (vote === 'reject' ? 1 : 0),
+      total: voteStats.total + 1,
+    };
+
+    // 將投票結果送到 Firebase
+    set(ref(db, 'votes'), newStats);
+
+    // 更新本地狀態和 localStorage
+    setVoteStats(prev => ({ ...newStats, userVote: vote }));
+    localStorage.setItem('userVote', vote);
   };
 
   const calculatePercentage = (value: number) => {
-    return Math.round((value / voteStats.total) * 100);
+    return voteStats.total === 0 ? 0 : Math.round((value / voteStats.total) * 100);
   };
 
   return (
-      <section ref={ref} id="voting" className="section bg-gradient-to-br from-primary-50 to-secondary-50 py-20">
+      <section ref={viewRef} id="voting" className="section bg-gradient-to-br from-primary-50 to-secondary-50 py-20">
         <div className="container-custom">
           <motion.div
               initial={{ opacity: 0, y: 20 }}
